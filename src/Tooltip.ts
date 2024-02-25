@@ -1,4 +1,4 @@
-import { escapeSpaces, getTooltipWrapperId, setZIndex } from "./Utils.ts";
+import { escapeSpaces, getTooltipWrapperId, setZIndex } from "./utils.ts";
 import { FacilityDataStatic, SceneObject } from "./objects/index.ts";
 
 export function getHtmlTooltip() {

@@ -1,0 +1,1 @@
+export type XYZCoordinates = Pick<THREE.Vector3, 'x' | 'y' | 'z'>;

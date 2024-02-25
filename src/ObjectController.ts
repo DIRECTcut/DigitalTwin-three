@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { BOUNDING_BOXES } from "./objects";
 
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { getAnnotationIdByFileName } from "./Utils";
+import { getAnnotationIdByFileName } from "./utils";
 
 // Initialize Draco loader
 const dracoLoader = new DRACOLoader();

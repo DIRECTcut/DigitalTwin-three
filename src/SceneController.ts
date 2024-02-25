@@ -1,14 +1,15 @@
 import * as THREE from 'three';
+import * as TWEEN from '@tweenjs/tween.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
-import gsap from 'gsap';
 import { generateTooltipNametag, generateTooltipTable, getHtmlTooltip, resetAnnotationsZIndex } from './Tooltip';
 import { GUI } from 'dat.gui';
-import { escapeSpaces, getAnnotationIdByFileName, getAnnotationScreenPosition, getTooltipWrapperId, isUserAgentMobile, setZIndex } from './Utils';
+import { escapeSpaces, getAnnotationIdByFileName, getAnnotationScreenPosition, getTooltipWrapperId, isUserAgentMobile, setZIndex } from './utils';
 import { SceneObject } from './objects/index'
+import { XYZCoordinates } from './types';
 const IS_DEBUG = false;
 const SHOW_CAMERA_CONTROLS = false;
-const CAMERA_INITIAL_POSITION = {
+const CAMERA_INITIAL_POSITION: XYZCoordinates = {
     x: 2,
     y: 6.5,
     z: 7.5
@@ -224,20 +225,9 @@ export class SceneController {
             setTimeout(() => this.isCameraFlying = false, CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS * 1000 + 100)
             this.isCameraZoomedInToObject = true;
             this.isCameraFlying = true;
-            gsap.to(this.camera.position, {
-                x: closestIntersection.object.parent?.userData.cameraPosition.x,
-                y: closestIntersection.object.parent?.userData.cameraPosition.y,
-                z: closestIntersection.object.parent?.userData.cameraPosition.z,
-                duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS
-            });
 
-            // // Move the camera's look-at target to the object's position
-            gsap.to(this.controls.target, {
-                x: closestIntersection.point.x,
-                y: closestIntersection.point.y,
-                z: closestIntersection.point.z,
-                duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS
-            });
+            this.tween(this.camera.position, closestIntersection.object.parent?.userData.cameraPosition);
+            this.tween(this.controls.target, closestIntersection.point);
         }
 
         if (closestIntersection && closestIntersection.object?.parent?.userData?.data) {
@@ -249,6 +239,17 @@ export class SceneController {
 
         this.controls.update();
     };
+
+    private tween(objectVector: THREE.Vector3, to: XYZCoordinates) {
+        new TWEEN.Tween(objectVector)
+        .to(to, CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS * 1000)
+        .onUpdate(() => {
+            objectVector.set(objectVector.x, objectVector.y, objectVector.z);
+        })
+        .start();
+
+        return TWEEN.update();
+    }
 
 
     private addCameraControl() {
@@ -269,8 +270,22 @@ export class SceneController {
         this.hideHtmlTooltip();
         this.isCameraZoomedInToObject = false;
 
-        gsap.to(this.camera.position, {...CAMERA_INITIAL_POSITION, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
-        return gsap.to(this.controls.target, {...this.scene.position, duration: CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS});
+        this.tween(this.camera.position, CAMERA_INITIAL_POSITION);
+        new TWEEN.Tween(this.camera.position)
+            .to(CAMERA_INITIAL_POSITION, CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS * 1000)
+            .onUpdate(() => {
+                this.camera.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
+            })
+            .start();
+
+        new TWEEN.Tween(this.controls.target)
+            .to(this.scene.position, CAMERA_SMOOTH_ANIMATION_DURATION_SECONDS * 1000)
+            .onUpdate(() => {
+                this.controls.target.set(this.controls.target.x, this.controls.target.y, this.controls.target.z);
+            })
+            .start();
+
+        return TWEEN.update();
     }
 
     private onWindowResize = () => {
@@ -281,6 +296,7 @@ export class SceneController {
 
     private animate = () => {
         requestAnimationFrame(this.animate);
+        TWEEN.update();
         this.renderer.render(this.scene, this.camera);
         this.controls.update();
 

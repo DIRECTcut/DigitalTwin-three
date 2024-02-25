@@ -30,7 +30,6 @@ interface Coordinates {
     z: number;
 }
 
-
 export const BOUNDING_BOXES: SceneObject[] = 
 [
     {

@@ -1,10 +1,5 @@
 import { Vector3 } from 'three';
 
-export const getRandomNumber = () => {
-    // Return a random number
-    return Math.random();
-}
-
 export function getAnnotationScreenPosition(object: THREE.Object3D, camera: THREE.PerspectiveCamera) {
     const annotation = object.userData.annotation || object.parent?.userData.annotation;
     if(!annotation) {
