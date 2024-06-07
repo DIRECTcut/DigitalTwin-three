@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { ObjectController } from './ObjectController';
 import { generateTooltipNametag, generateTooltipTable, getHtmlTooltip, resetAnnotationsZIndex } from './Tooltip';
 import { GUI } from 'dat.gui';
-import { escapeSpaces, getAnnotationIdByFileName, getAnnotationScreenPosition, getTooltipWrapperId, isUserAgentMobile, setZIndex } from './utils';
+import { escapeSpaces, getAnnotationIdByFileName, getAnnotationScreenPosition, getTooltipWrapperId, isUserAgentMobile, setZIndex } from './Utils';
 import { SceneObject } from './objects/index'
 import { XYZCoordinates } from './types';
 const IS_DEBUG = false;
